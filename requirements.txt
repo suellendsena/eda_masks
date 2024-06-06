@@ -1,5 +1,5 @@
 matplotlib
 scipy
 nibabel
-skimage
+scikit-image
 seaborn
