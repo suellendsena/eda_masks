@@ -136,6 +136,7 @@ def main():
     selected_patient = st.sidebar.selectbox('Selecione o Paciente:', patients)
 
     radius = st.sidebar.slider('Resolução para perfil', min_value=0.01, max_value=0.49, value=0.49, step=0.01)
+    smooth = st.sidebar.slider('Smooth', min_value=100, max_value=100, value=700, step=100)
     
     directory_path = f"data/{selected_patient}"
     file_list = os.listdir(directory_path)
@@ -163,7 +164,7 @@ def main():
                 fig, ax = plt.subplots(figsize=(7, 7))
                 custom_cmap = ListedColormap(['white', 'black'])
                 ax.imshow(con_M0, cmap=custom_cmap)
-                ax.plot(y, x, linestyle='-', color='blue', linewidth=2)
+                ax.plot(y, x, linestyle='-', color='blue', linewidth=1)
                 ax.plot(y[min_angle_index], x[min_angle_index], 'bo', label='Menor Ângulo', markersize=6, color='red')
                 ax.legend()
                 print(y[min_angle_index], x[min_angle_index])
