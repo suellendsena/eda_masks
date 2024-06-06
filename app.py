@@ -9,6 +9,7 @@ from skimage import morphology as nima
 from matplotlib.colors import ListedColormap
 import seaborn as sns
 import os
+import cv2
 
 """
 Shape signature profile Module
@@ -128,6 +129,17 @@ def find_slice_with_mask(img_mask):
                 return i
         return None
 
+def shift_angles_with_cv2(angles, shift_amount):
+    # Transforma o array de ângulos em uma "imagem" de uma única linha
+    angle_image = angles[np.newaxis, :]
+    # Define a matriz de translação para deslocar a linha
+    M = np.float32([[1, 0, -shift_amount], [0, 1, 0]])  # Deslocamento negativo para direita
+    # Aplica warpAffine com borderMode BORDER_WRAP
+    shifted_image = cv2.warpAffine(angle_image, M, (angle_image.shape[1], angle_image.shape[0]), borderMode=cv2.BORDER_WRAP)
+    # Extrai o array resultante da "imagem"
+    shifted_angles = shifted_image[0]
+    return shifted_angles
+
 from scipy.stats import gaussian_kde
 
 def main():
@@ -158,7 +170,7 @@ def main():
             x, y = spline.splev(t_pivot, tck)
             all_coordinates.append((x[min_angle_index], y[min_angle_index], radius))
 
-            col1, col2 = st.columns(2)
+            col1, col2, col3 = st.columns(3)
 
             with col1:
                 fig, ax = plt.subplots(figsize=(7, 7))
@@ -174,6 +186,17 @@ def main():
                 fig, ax = plt.subplots(figsize=(5, 3))
                 ax.plot(angles, 'b-')
                 ax.plot(min_angle_index, angles[min_angle_index], 'ro', label='Menor Ângulo')
+                ax.set_xlabel("Index do Ponto")
+                ax.set_ylabel("Ângulo (graus)")
+                ax.legend()
+                st.pyplot(fig)
+
+            with col3:
+                shifted_angles = shift_angles_with_cv2(angles, 10)  # Exemplo de deslocamento de 10
+                min_angle_index_shifted = np.argmin(shifted_angles)
+                fig, ax = plt.subplots(figsize=(5, 3))
+                ax.plot(shifted_angles, 'b-')
+                ax.plot(min_angle_index_shifted, shifted_angles[min_angle_index_shifted], 'ro', label='Menor Ângulo após Shift')
                 ax.set_xlabel("Index do Ponto")
                 ax.set_ylabel("Ângulo (graus)")
                 ax.legend()

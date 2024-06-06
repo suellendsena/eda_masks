@@ -3,3 +3,4 @@ scipy
 nibabel
 scikit-image
 seaborn
+opencv-python
