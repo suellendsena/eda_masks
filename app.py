@@ -163,16 +163,16 @@ def main():
                 custom_cmap = ListedColormap(['white', 'black'])
                 ax.imshow(con_M0, cmap=custom_cmap)
                 ax.plot(y, x, linestyle='-', color='green', linewidth=2)
-                ax.plot(y[min_angle_index], x[min_angle_index], 'bo', label='Menor Ângulo', markersize=6, color='red')
+                ax.plot(y[min_angle_index], x[min_angle_index], 'bo', label='Menor ângulo', markersize=6, color='red')
                 ax.legend()
                 st.pyplot(fig)
 
             with col2:
                 fig, ax = plt.subplots(figsize=(5, 3))
                 ax.plot(angles, 'b-')
-                ax.plot(min_angle_index, angles[min_angle_index], 'ro', label='Menor Ângulo')
-                ax.set_xlabel("Index do Ponto")
-                ax.set_ylabel("Ângulo (graus)")
+                ax.plot(min_angle_index, angles[min_angle_index], 'ro', label='Menor ângulo')
+                ax.set_xlabel("Ponto pivô")
+                ax.set_ylabel("Curvatura")
                 ax.legend()
                 st.pyplot(fig)
 
@@ -181,9 +181,9 @@ def main():
                         rolled_angles = np.roll(angles, shift)
                         ax.plot(rolled_angles, 'b-')
                         adjusted_min_angle_index = (min_angle_index + shift) % 500  # Ajusta o índice do menor ângulo
-                        ax.plot(adjusted_min_angle_index, rolled_angles[adjusted_min_angle_index], 'ro', label='Menor Ângulo')
-                        ax.set_xlabel("Index do Ponto")
-                        ax.set_ylabel("Ângulo (graus)")
+                        ax.plot(adjusted_min_angle_index, rolled_angles[adjusted_min_angle_index], 'ro', label='Menor ângulo')
+                        ax.set_xlabel("Ponto pivô")
+                        ax.set_ylabel("Curvatura")
                         ax.legend()
                         st.pyplot(fig)
 
