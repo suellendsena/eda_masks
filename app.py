@@ -163,6 +163,7 @@ def main():
                 fig, ax = plt.subplots(figsize=(7, 7))
                 custom_cmap = ListedColormap(['white', 'black'])
                 ax.imshow(con_M0, cmap=custom_cmap)
+                ax.plot(x, y, linestyle='-', color='blue', linewidth=2)
                 ax.plot(y[min_angle_index], x[min_angle_index], 'bo', label='Menor Ângulo', markersize=6, color='red')
                 ax.legend()
                 print(y[min_angle_index], x[min_angle_index])
