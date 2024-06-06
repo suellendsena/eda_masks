@@ -136,6 +136,7 @@ def main():
     radius = st.sidebar.slider('Resolução para perfil', min_value=0.01, max_value=0.49, value=0.49, step=0.01)
     smooth = st.sidebar.slider('Smooth', min_value=100, max_value=1000, value=700, step=100)
     shift = st.sidebar.slider('Shift', min_value=-250, max_value=250, value=0, step=10)  # Slider para deslocamento
+    shift_y = st.sidebar.slider('Shift Vertical', min_value=-50, max_value=50, value=0, step=5)  # Slider para deslocamento vertical
     
     directory_path = f"data/{selected_patient}"
     file_list = os.listdir(directory_path)
@@ -176,16 +177,17 @@ def main():
                 ax.legend()
                 st.pyplot(fig)
 
-        with col3:  # Ajustando o gráfico com o shift periódico
-                        fig, ax = plt.subplots(figsize=(5, 3))
-                        rolled_angles = np.roll(angles, shift)
-                        ax.plot(rolled_angles, 'b-')
-                        adjusted_min_angle_index = (min_angle_index + shift) % 500  # Ajusta o índice do menor ângulo
-                        ax.plot(adjusted_min_angle_index, rolled_angles[adjusted_min_angle_index], 'ro', label='Menor ângulo')
-                        ax.set_xlabel("Ponto pivô")
-                        ax.set_ylabel("Curvatura")
-                        ax.legend()
-                        st.pyplot(fig)
+        with col3:  # Ajustando o gráfico com os shifts periódicos
+                fig, ax = plt.subplots(figsize=(5, 3))
+                rolled_angles = np.roll(angles, shift)  # Aplica o shift horizontal
+                adjusted_angles = rolled_angles + shift_y  # Aplica o shift vertical
+                adjusted_min_angle_index = (min_angle_index + shift) % 500  # Ajusta o índice do menor ângulo
+                ax.plot(adjusted_angles, 'b-')
+                ax.plot(adjusted_min_angle_index, adjusted_angles[adjusted_min_angle_index], 'ro', label='Menor ângulo')
+                ax.set_xlabel("Ponto pivô")
+                ax.set_ylabel("Curvatura")
+                ax.legend()
+                st.pyplot(fig)
 
     if all_coordinates:
         coords_int = np.array([(round(x), round(y)) for x, y, radius in all_coordinates], dtype=int)
