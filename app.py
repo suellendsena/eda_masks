@@ -1,7 +1,7 @@
 import numpy as np
 import scipy.interpolate as spline
 import scipy.ndimage as nima
-from aux import default_config as df_conf
+from cc import default_config as df_conf
 import nibabel as nib
 import streamlit as st
 import matplotlib.pyplot as plt
@@ -137,7 +137,7 @@ def main():
 
     radius = st.sidebar.slider('Resolução para perfil', min_value=0.01, max_value=0.49, value=0.49, step=0.01)
     
-    directory_path = f"L:/new_reasearch/data/{selected_patient}"
+    directory_path = f"data/{selected_patient}"
     file_list = os.listdir(directory_path)
     nii_files = [file for file in file_list if file.endswith('.nii.gz') and file != 'FA_inCCsightspace.nii.gz']
     all_coordinates = []
