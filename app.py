@@ -9,7 +9,6 @@ from skimage import morphology as nima
 from matplotlib.colors import ListedColormap
 import seaborn as sns
 import os
-import cv2
 
 """
 Shape signature profile Module
@@ -129,19 +128,6 @@ def find_slice_with_mask(img_mask):
                 return i
         return None
 
-def shift_angles_with_cv2(angles, shift_amount):
-    # Transforma o array de ângulos em uma "imagem" de uma única linha
-    angle_image = angles[np.newaxis, :]
-    # Define a matriz de translação para deslocar a linha
-    M = np.float32([[1, 0, -shift_amount], [0, 1, 0]])  # Deslocamento negativo para direita
-    # Aplica warpAffine com borderMode BORDER_WRAP
-    shifted_image = cv2.warpAffine(angle_image, M, (angle_image.shape[1], angle_image.shape[0]), borderMode=cv2.BORDER_WRAP)
-    # Extrai o array resultante da "imagem"
-    shifted_angles = shifted_image[0]
-    return shifted_angles
-
-from scipy.stats import gaussian_kde
-
 def main():
 
     patients = ['000153', '000155', '000158', '000159', '000160', '000161', '000166', '000168', '000169', '000173', '000175', '000176', '000177', '000178', '000179']
@@ -149,6 +135,7 @@ def main():
 
     radius = st.sidebar.slider('Resolução para perfil', min_value=0.01, max_value=0.49, value=0.49, step=0.01)
     smooth = st.sidebar.slider('Smooth', min_value=100, max_value=1000, value=700, step=100)
+    shift = st.sidebar.slider('Shift do Gráfico de Ângulo', min_value=-100, max_value=100, value=0, step=10)  # Slider para deslocamento
     
     directory_path = f"data/{selected_patient}"
     file_list = os.listdir(directory_path)
@@ -159,7 +146,6 @@ def main():
         full_path = os.path.join(directory_path, file_name)
         img_mask = nib.load(full_path).get_fdata()
         msp = find_slice_with_mask(img_mask)
-        
 
         if msp is not None:
             img_mask_msp_slice = img_mask[msp]
@@ -170,7 +156,7 @@ def main():
             x, y = spline.splev(t_pivot, tck)
             all_coordinates.append((x[min_angle_index], y[min_angle_index], radius))
 
-            col1, col2, col3 = st.columns(3)
+            col1, col2, col3 = st.columns(3)  # Criando uma terceira coluna
 
             with col1:
                 fig, ax = plt.subplots(figsize=(7, 7))
@@ -179,7 +165,6 @@ def main():
                 ax.plot(y, x, linestyle='-', color='green', linewidth=2)
                 ax.plot(y[min_angle_index], x[min_angle_index], 'bo', label='Menor Ângulo', markersize=6, color='red')
                 ax.legend()
-                print(y[min_angle_index], x[min_angle_index])
                 st.pyplot(fig)
 
             with col2:
@@ -191,17 +176,17 @@ def main():
                 ax.legend()
                 st.pyplot(fig)
 
-            with col3:
-                shifted_angles = shift_angles_with_cv2(angles, 10)  # Exemplo de deslocamento de 10
-                min_angle_index_shifted = np.argmin(shifted_angles)
-                fig, ax = plt.subplots(figsize=(5, 3))
-                ax.plot(shifted_angles, 'b-')
-                ax.plot(min_angle_index_shifted, shifted_angles[min_angle_index_shifted], 'ro', label='Menor Ângulo após Shift')
-                ax.set_xlabel("Index do Ponto")
-                ax.set_ylabel("Ângulo (graus)")
-                ax.legend()
-                st.pyplot(fig)
-
+        with col3:  # Ajustando o gráfico com o shift periódico
+                        fig, ax = plt.subplots(figsize=(5, 3))
+                        rolled_angles = np.roll(angles, shift)
+                        ax.plot(rolled_angles, 'b-')
+                        adjusted_min_angle_index = (min_angle_index + shift) % 500  # Ajusta o índice do menor ângulo
+                        ax.plot(adjusted_min_angle_index, rolled_angles[adjusted_min_angle_index], 'ro', label='Menor Ângulo')
+                        ax.set_xlabel("Index do Ponto")
+                        ax.set_ylabel("Ângulo (graus)")
+                        ax.legend()
+                        st.pyplot(fig)
+                        
     if all_coordinates:
         coords_int = np.array([(round(x), round(y)) for x, y, radius in all_coordinates], dtype=int)
         coords_array = np.array(all_coordinates)
