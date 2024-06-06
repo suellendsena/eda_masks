@@ -1,2 +1,5 @@
 matplotlib
 scipy
+nibabel
+skimage
+seaborn
