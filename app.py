@@ -132,7 +132,7 @@ def main():
 
     patients = ['000153', '000155', '000158', '000159', '000160', '000161', '000166', 
                 '000168', '000169', '000173', '000175', '000176', '000177', '000178', 
-                '000179', '000033', '000034', '000723']
+                '000179', '000033', '000034', '000723', '001781']
     selected_patient = st.sidebar.selectbox('Selecione o Paciente:', patients)
 
     radius = st.sidebar.slider('Resolução para perfil', min_value=0.01, max_value=0.49, value=0.49, step=0.01)
