@@ -136,13 +136,14 @@ def main():
                 '000179', '000033', '000034', '000723', '001781']
     
     structure_options = {
+        "Default": None, 
         "Cruz": np.array([[0, 1, 0],
                           [1, 1, 1],
                           [0, 1, 0]]),
-        "Retângulo": rectangle(3, 5),  # Exemplo de retângulo 3x5
-        "Quadrado": square(3),  # Exemplo de quadrado de tamanho 3
-        "Círculo": disk(1),  # Disco de raio 1
-        "Diamante": diamond(1)  # Diamante de raio 1
+        #"Retângulo": rectangle(3, 5),  # Exemplo de retângulo 3x5
+        #"Quadrado": square(3),  # Exemplo de quadrado de tamanho 3
+        #"Círculo": disk(1),  # Disco de raio 1
+        #"Diamante": diamond(1)  # Diamante de raio 1
     }
     
     structure_names = list(structure_options.keys())
