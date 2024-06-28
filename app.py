@@ -10,13 +10,14 @@ from matplotlib.colors import ListedColormap
 import seaborn as sns
 import os
 
+
 """
 Shape signature profile Module
 """
 
 
 def sign_extract(seg, resols, smoothness, points): #Function for shape signature extraction
-    splines = get_spline(seg,smoothness)
+    splines = get_spline(seg,smoothness, foot)
 
     sign_vect = np.array([]).reshape(0,points) #Initializing temporal signature vector
     for resol in resols:
@@ -102,15 +103,13 @@ def get_seq_graph(edge):
 
     return (np.array(lst1), np.array(lst2))
 
-def get_spline(seg,s):
+def get_spline(seg,s,foot):
     nz = np.nonzero(seg)
     x1,x2,y1,y2 = np.amin(nz[0]),np.amax(nz[0]),np.amin(nz[1]),np.amax(nz[1])
     M0 = seg[x1-5:x2+5,y1-5:y2+5]
     nescala = [4*M0.shape[-2],4*M0.shape[-1]]
     M0 = resizedti(M0,nescala).astype('bool')
-    M0_ero = nima.binary_erosion(M0, footprint= np.array([[0, 1, 0],
-                      [1, 1, 1],
-                      [0, 1, 0]], dtype=bool)).astype(M0.dtype)
+    M0_ero = nima.binary_erosion(M0, footprint=foot).astype(M0.dtype)
     con_M0 = np.logical_xor(M0_ero,M0)
     seq = get_seq_graph(con_M0)
     tck, _ = spline.splprep(seq, k=5, s=s)
@@ -132,6 +131,25 @@ def find_slice_with_mask(img_mask):
 
 def main():
 
+    structure_options = {
+        "Cruz": np.array([[0, 1, 0],
+                          [1, 1, 1],
+                          [0, 1, 0]]),
+        "Retângulo": nima.rectangle(3, 5),  
+        "Quadrado": nima.square(3), 
+        "Círculo": nima.disk(1), 
+        "Diamante": nima.diamond(1)  
+    }
+
+    # Lista de nomes das opções para o selectbox
+    structure_names = list(structure_options.keys())
+
+    # Selecionando a estrutura a partir do selectbox
+    selected_structure_name = st.sidebar.selectbox('Selecione a estrutura:', structure_names)
+
+    # Recuperando a estrutura correspondente
+    foot = structure_options[selected_structure_name]
+
     patients = ['000153', '000155', '000158', '000159', '000160', '000161', '000166', 
                 '000168', '000169', '000173', '000175', '000176', '000177', '000178', 
                 '000179', '000033', '000034', '000723', '001781']
@@ -139,7 +157,7 @@ def main():
 
     radius = st.sidebar.slider('Resolução para perfil', min_value=0.01, max_value=0.49, value=0.49, step=0.01)
     smooth = st.sidebar.slider('Smooth', min_value=100, max_value=1000, value=700, step=100)
-    shift = st.sidebar.slider('Shift', min_value=-250, max_value=250, value=0, step=10)  # Slider para deslocamento
+    shift = st.sidebar.slider('Shift', min_value=-250, max_value=250, value=0, step=10) 
     
     directory_path = f"data/{selected_patient}"
     file_list = os.listdir(directory_path)
@@ -153,7 +171,7 @@ def main():
 
         if msp is not None:
             img_mask_msp_slice = img_mask[msp]
-            tck, M0, M0_ero, con_M0 = get_spline(img_mask_msp_slice, smooth)
+            tck, M0, M0_ero, con_M0 = get_spline(img_mask_msp_slice, smooth, foot)
             angles = get_profile(tck, n_samples=500, radius=radius)
             min_angle_index = np.argmin(angles)
             t_pivot = np.linspace(0, 1, 500, endpoint=False)
