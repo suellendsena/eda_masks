@@ -108,7 +108,9 @@ def get_spline(seg,s):
     M0 = seg[x1-5:x2+5,y1-5:y2+5]
     nescala = [4*M0.shape[-2],4*M0.shape[-1]]
     M0 = resizedti(M0,nescala).astype('bool')
-    M0_ero = nima.binary_erosion(M0, structure=np.ones((3, 3))).astype(M0.dtype)
+    M0_ero = nima.binary_erosion(M0, footprint= np.array([[0, 1, 0],
+                      [1, 1, 1],
+                      [0, 1, 0]], dtype=bool)).astype(M0.dtype)
     con_M0 = np.logical_xor(M0_ero,M0)
     seq = get_seq_graph(con_M0)
     tck, _ = spline.splprep(seq, k=5, s=s)
