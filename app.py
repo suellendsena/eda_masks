@@ -132,7 +132,7 @@ def find_slice_with_mask(img_mask):
 def main():
 
     structure_options = {
-        "Defaut": None,
+        "Default": None,
         "Cruz": np.array([[0, 1, 0],
                           [1, 1, 1],
                           [0, 1, 0]]),
