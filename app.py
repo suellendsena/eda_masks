@@ -131,17 +131,41 @@ def find_slice_with_mask(img_mask):
 
 def main():
 
+    # Cruz
+    cruz = np.array([[0, 1, 0],
+                    [1, 1, 1],
+                    [0, 1, 0]])
+
+    # Retângulo
+    def rectangle(height, width):
+        return np.ones((height, width), dtype=np.uint8)
+
+    # Quadrado
+    def square(size):
+        return np.ones((size, size), dtype=np.uint8)
+
+    # Círculo
+    def disk(radius):
+        L = np.arange(-radius, radius + 1)
+        X, Y = np.meshgrid(L, L)
+        return (X**2 + Y**2 <= radius**2).astype(np.uint8)
+
+    # Diamante
+    def diamond(radius):
+        L = np.arange(-radius, radius + 1)
+        X, Y = np.meshgrid(L, L)
+        return (np.abs(X) + np.abs(Y) <= radius).astype(np.uint8)
+
+    # Dicionário de opções de estrutura
     structure_options = {
         "Default": None,
-        "Cruz": np.array([[0, 1, 0],
-                          [1, 1, 1],
-                          [0, 1, 0]]),
-        "Retângulo": nima.rectangle(3, 5),  
-        "Quadrado": nima.square(3), 
-        "Círculo": nima.disk(1), 
-        "Diamante": nima.diamond(1)  
+        "Cruz": cruz,
+        "Retângulo": rectangle(3, 5),  
+        "Quadrado": square(3), 
+        "Círculo": disk(1), 
+        "Diamante": diamond(1)  
     }
-
+    
     # Lista de nomes das opções para o selectbox
     structure_names = list(structure_options.keys())
 
