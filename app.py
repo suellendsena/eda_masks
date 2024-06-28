@@ -17,7 +17,7 @@ Shape signature profile Module
 
 
 def sign_extract(seg, resols, smoothness, points, structure): #Function for shape signature extraction
-    splines = get_spline(seg, smoothness, structure)
+    splines = get_spline(seg=seg, s=smoothness, structure=structure)
 
     sign_vect = np.array([]).reshape(0,points) #Initializing temporal signature vector
     for resol in resols:
@@ -103,7 +103,7 @@ def get_seq_graph(edge):
 
     return (np.array(lst1), np.array(lst2))
 
-def get_spline(seg,s,structure):
+def get_spline(seg, s, structure):
     nz = np.nonzero(seg)
     x1,x2,y1,y2 = np.amin(nz[0]),np.amax(nz[0]),np.amin(nz[1]),np.amax(nz[1])
     M0 = seg[x1-5:x2+5,y1-5:y2+5]
