@@ -9,6 +9,7 @@ from skimage import morphology as nima
 from matplotlib.colors import ListedColormap
 import seaborn as sns
 import os
+from skimage.morphology import diamond, rectangle, disk
 
 """
 Shape signature profile Module
@@ -144,11 +145,14 @@ def main():
                       [0, 1, 0]])
     
     square3 = np.ones((3,3))
-    
-    square3 = np.ones((5,5))
+    square5 = np.ones((5,5))
+    disk1 = disk(1) 
+    diamond1 = diamond(1)
+    rectangle1 = rectangle(1, 5)
 
-    [cross, square3, square5]
-    structure = st.sidebar.selectbox('Selecione a estrutura:', patients)
+    structures = [cross, square3, square5, disk1, diamond1, rectangle1]
+
+    structure = st.sidebar.selectbox('Selecione a estrutura:', structures)
     
     directory_path = f"data/{selected_patient}"
     file_list = os.listdir(directory_path)
