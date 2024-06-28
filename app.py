@@ -1,20 +1,16 @@
 import numpy as np
 import scipy.interpolate as spline
 import scipy.ndimage as nima
-from cc import default_config as df_conf
 import nibabel as nib
 import streamlit as st
 import matplotlib.pyplot as plt
-from skimage import morphology as nima
+from skimage.morphology import binary_erosion, diamond, rectangle, disk, square
 from matplotlib.colors import ListedColormap
-import seaborn as sns
 import os
-#from skimage.morphology import diamond, rectangle, disk, square
 
 """
 Shape signature profile Module
 """
-
 
 def sign_extract(seg, resols, smoothness, points, structure): #Function for shape signature extraction
     splines = get_spline(seg=seg, s=smoothness, structure=structure)
@@ -109,7 +105,7 @@ def get_spline(seg, s, structure):
     M0 = seg[x1-5:x2+5,y1-5:y2+5]
     nescala = [4*M0.shape[-2],4*M0.shape[-1]]
     M0 = resizedti(M0,nescala).astype('bool')
-    M0_ero = nima.binary_erosion(M0, structure=structure).astype(M0.dtype)
+    M0_ero = binary_erosion(M0, structure=structure).astype(M0.dtype)
     con_M0 = np.logical_xor(M0_ero,M0)
     seq = get_seq_graph(con_M0)
     tck, _ = spline.splprep(seq, k=5, s=s)
@@ -137,13 +133,10 @@ def main():
     
     structure_options = {
         "Default": None, 
-        #"Cruz": np.array([[0, 1, 0],
-        #                  [1, 1, 1],
-        #                  [0, 1, 0]]),
-        #"Retângulo": rectangle(3, 5),  # Exemplo de retângulo 3x5
-        #"Quadrado": square(3),  # Exemplo de quadrado de tamanho 3
-        #"Círculo": disk(1),  # Disco de raio 1
-        #"Diamante": diamond(1)  # Diamante de raio 1
+        "Retângulo": rectangle(3, 5),  # Exemplo de retângulo 3x5
+        "Quadrado": square(3),  # Exemplo de quadrado de tamanho 3
+        "Círculo": disk(1),  # Disco de raio 1
+        "Diamante": diamond(1)  # Diamante de raio 1
     }
     
     structure_names = list(structure_options.keys())
@@ -196,16 +189,16 @@ def main():
                 ax.legend()
                 st.pyplot(fig)
 
-        with col3:  # Ajustando o gráfico com o shift periódico
-                        fig, ax = plt.subplots(figsize=(5, 3))
-                        rolled_angles = np.roll(angles, shift)
-                        ax.plot(rolled_angles, 'b-')
-                        adjusted_min_angle_index = (min_angle_index + shift) % 500  # Ajusta o índice do menor ângulo
-                        ax.plot(adjusted_min_angle_index, rolled_angles[adjusted_min_angle_index], 'ro', label='Menor ângulo')
-                        ax.set_xlabel("Ponto pivô")
-                        ax.set_ylabel("Curvatura")
-                        ax.legend()
-                        st.pyplot(fig)
+            with col3:  # Ajustando o gráfico com o shift periódico
+                fig, ax = plt.subplots(figsize=(5, 3))
+                rolled_angles = np.roll(angles, shift)
+                ax.plot(rolled_angles, 'b-')
+                adjusted_min_angle_index = (min_angle_index + shift) % 500  # Ajusta o índice do menor ângulo
+                ax.plot(adjusted_min_angle_index, rolled_angles[adjusted_min_angle_index], 'ro', label='Menor ângulo')
+                ax.set_xlabel("Ponto pivô")
+                ax.set_ylabel("Curvatura")
+                ax.legend()
+                st.pyplot(fig)
 
     if all_coordinates:
         coords_int = np.array([(round(x), round(y)) for x, y, radius in all_coordinates], dtype=int)
