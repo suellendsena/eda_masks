@@ -1,19 +1,22 @@
 import numpy as np
 import scipy.interpolate as spline
 import scipy.ndimage as nima
+from cc import default_config as df_conf
 import nibabel as nib
 import streamlit as st
 import matplotlib.pyplot as plt
-from skimage.morphology import binary_erosion, diamond, rectangle, disk, square
+from skimage import morphology as nima
 from matplotlib.colors import ListedColormap
+import seaborn as sns
 import os
 
 """
 Shape signature profile Module
 """
 
-def sign_extract(seg, resols, smoothness, points, structure): #Function for shape signature extraction
-    splines = get_spline(seg=seg, s=smoothness, structure=structure)
+
+def sign_extract(seg, resols, smoothness, points): #Function for shape signature extraction
+    splines = get_spline(seg,smoothness)
 
     sign_vect = np.array([]).reshape(0,points) #Initializing temporal signature vector
     for resol in resols:
@@ -99,17 +102,13 @@ def get_seq_graph(edge):
 
     return (np.array(lst1), np.array(lst2))
 
-def get_spline(seg, s, structure):
-    if structure is None:
-        structure = diamond(1)  # Default structure if none is provided
-    print(f"Using structure: {structure}")
-
+def get_spline(seg,s):
     nz = np.nonzero(seg)
     x1,x2,y1,y2 = np.amin(nz[0]),np.amax(nz[0]),np.amin(nz[1]),np.amax(nz[1])
     M0 = seg[x1-5:x2+5,y1-5:y2+5]
     nescala = [4*M0.shape[-2],4*M0.shape[-1]]
     M0 = resizedti(M0,nescala).astype('bool')
-    M0_ero = binary_erosion(M0, structure=structure).astype(M0.dtype)
+    M0_ero = nima.binary_erosion(M0, structure=np.ones((3, 3))).astype(M0.dtype)
     con_M0 = np.logical_xor(M0_ero,M0)
     seq = get_seq_graph(con_M0)
     tck, _ = spline.splprep(seq, k=5, s=s)
@@ -134,25 +133,11 @@ def main():
     patients = ['000153', '000155', '000158', '000159', '000160', '000161', '000166', 
                 '000168', '000169', '000173', '000175', '000176', '000177', '000178', 
                 '000179', '000033', '000034', '000723', '001781']
-    
-    structure_options = {
-        "Default": None, 
-        "Retângulo": rectangle(3, 5),  # Exemplo de retângulo 3x5
-        "Quadrado": square(3),  # Exemplo de quadrado de tamanho 3
-        "Círculo": disk(1),  # Disco de raio 1
-        "Diamante": diamond(1)  # Diamante de raio 1
-    }
-    
-    structure_names = list(structure_options.keys())
-
     selected_patient = st.sidebar.selectbox('Selecione o Paciente:', patients)
 
     radius = st.sidebar.slider('Resolução para perfil', min_value=0.01, max_value=0.49, value=0.49, step=0.01)
     smooth = st.sidebar.slider('Smooth', min_value=100, max_value=1000, value=700, step=100)
     shift = st.sidebar.slider('Shift', min_value=-250, max_value=250, value=0, step=10)  # Slider para deslocamento
-    
-    selected_structure_name = st.sidebar.selectbox('Selecione a estrutura:', structure_names)
-    structure = structure_options[selected_structure_name]
     
     directory_path = f"data/{selected_patient}"
     file_list = os.listdir(directory_path)
@@ -166,7 +151,7 @@ def main():
 
         if msp is not None:
             img_mask_msp_slice = img_mask[msp]
-            tck, M0, M0_ero, con_M0 = get_spline(seg=img_mask_msp_slice, s=smooth, structure=structure)
+            tck, M0, M0_ero, con_M0 = get_spline(img_mask_msp_slice, smooth)
             angles = get_profile(tck, n_samples=500, radius=radius)
             min_angle_index = np.argmin(angles)
             t_pivot = np.linspace(0, 1, 500, endpoint=False)
@@ -193,16 +178,16 @@ def main():
                 ax.legend()
                 st.pyplot(fig)
 
-            with col3:  # Ajustando o gráfico com o shift periódico
-                fig, ax = plt.subplots(figsize=(5, 3))
-                rolled_angles = np.roll(angles, shift)
-                ax.plot(rolled_angles, 'b-')
-                adjusted_min_angle_index = (min_angle_index + shift) % 500  # Ajusta o índice do menor ângulo
-                ax.plot(adjusted_min_angle_index, rolled_angles[adjusted_min_angle_index], 'ro', label='Menor ângulo')
-                ax.set_xlabel("Ponto pivô")
-                ax.set_ylabel("Curvatura")
-                ax.legend()
-                st.pyplot(fig)
+        with col3:  # Ajustando o gráfico com o shift periódico
+                        fig, ax = plt.subplots(figsize=(5, 3))
+                        rolled_angles = np.roll(angles, shift)
+                        ax.plot(rolled_angles, 'b-')
+                        adjusted_min_angle_index = (min_angle_index + shift) % 500  # Ajusta o índice do menor ângulo
+                        ax.plot(adjusted_min_angle_index, rolled_angles[adjusted_min_angle_index], 'ro', label='Menor ângulo')
+                        ax.set_xlabel("Ponto pivô")
+                        ax.set_ylabel("Curvatura")
+                        ax.legend()
+                        st.pyplot(fig)
 
     if all_coordinates:
         coords_int = np.array([(round(x), round(y)) for x, y, radius in all_coordinates], dtype=int)
