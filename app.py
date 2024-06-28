@@ -9,7 +9,7 @@ from skimage import morphology as nima
 from matplotlib.colors import ListedColormap
 import seaborn as sns
 import os
-from skimage.morphology import diamond, rectangle, disk, square
+#from skimage.morphology import diamond, rectangle, disk, square
 
 """
 Shape signature profile Module
@@ -137,9 +137,9 @@ def main():
     
     structure_options = {
         "Default": None, 
-        "Cruz": np.array([[0, 1, 0],
-                          [1, 1, 1],
-                          [0, 1, 0]]),
+        #"Cruz": np.array([[0, 1, 0],
+        #                  [1, 1, 1],
+        #                  [0, 1, 0]]),
         #"Retângulo": rectangle(3, 5),  # Exemplo de retângulo 3x5
         #"Quadrado": square(3),  # Exemplo de quadrado de tamanho 3
         #"Círculo": disk(1),  # Disco de raio 1
