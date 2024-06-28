@@ -169,7 +169,7 @@ def main():
 
         if msp is not None:
             img_mask_msp_slice = img_mask[msp]
-            tck, M0, M0_ero, con_M0 = get_spline(seg=img_mask_msp_slice, s=smooth, structue=structure)
+            tck, M0, M0_ero, con_M0 = get_spline(seg=img_mask_msp_slice, s=smooth, structure=structure)
             angles = get_profile(tck, n_samples=500, radius=radius)
             min_angle_index = np.argmin(angles)
             t_pivot = np.linspace(0, 1, 500, endpoint=False)
