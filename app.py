@@ -134,24 +134,24 @@ def main():
     patients = ['000153', '000155', '000158', '000159', '000160', '000161', '000166', 
                 '000168', '000169', '000173', '000175', '000176', '000177', '000178', 
                 '000179', '000033', '000034', '000723', '001781']
-    selected_patient = st.sidebar.selectbox('Selecione o Paciente:', patients)
-
-    radius = st.sidebar.slider('Resolução para perfil', min_value=0.01, max_value=0.49, value=0.49, step=0.01)
-    smooth = st.sidebar.slider('Smooth', min_value=100, max_value=1000, value=700, step=100)
-    shift = st.sidebar.slider('Shift', min_value=-250, max_value=250, value=0, step=10)  # Slider para deslocamento
-
-    cross = np.array([[0, 1, 0],
-                      [1, 1, 1],
-                      [0, 1, 0]])
     
     square3 = np.ones((3,3))
     square5 = np.ones((5,5))
     disk1 = disk(1) 
     diamond1 = diamond(1)
     rectangle1 = rectangle(1, 5)
-
+    cross = np.array([[0, 1, 0],
+                      [1, 1, 1],
+                      [0, 1, 0]])
+    
     structures = [cross, square3, square5, disk1, diamond1, rectangle1]
+    
+    selected_patient = st.sidebar.selectbox('Selecione o Paciente:', patients)
 
+    radius = st.sidebar.slider('Resolução para perfil', min_value=0.01, max_value=0.49, value=0.49, step=0.01)
+    smooth = st.sidebar.slider('Smooth', min_value=100, max_value=1000, value=700, step=100)
+    shift = st.sidebar.slider('Shift', min_value=-250, max_value=250, value=0, step=10)  # Slider para deslocamento
+    
     structure = st.sidebar.selectbox('Selecione a estrutura:', structures)
     
     directory_path = f"data/{selected_patient}"
