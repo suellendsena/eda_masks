@@ -16,7 +16,7 @@ Shape signature profile Module
 """
 
 
-def sign_extract(seg, resols, smoothness, points): #Function for shape signature extraction
+def sign_extract(seg, resols, smoothness, points, foot): #Function for shape signature extraction
     splines = get_spline(seg,smoothness, foot)
 
     sign_vect = np.array([]).reshape(0,points) #Initializing temporal signature vector
@@ -132,6 +132,7 @@ def find_slice_with_mask(img_mask):
 def main():
 
     structure_options = {
+        "Defaut": None,
         "Cruz": np.array([[0, 1, 0],
                           [1, 1, 1],
                           [0, 1, 0]]),
@@ -158,6 +159,7 @@ def main():
     radius = st.sidebar.slider('Resolução para perfil', min_value=0.01, max_value=0.49, value=0.49, step=0.01)
     smooth = st.sidebar.slider('Smooth', min_value=100, max_value=1000, value=700, step=100)
     shift = st.sidebar.slider('Shift', min_value=-250, max_value=250, value=0, step=10) 
+    
     
     directory_path = f"data/{selected_patient}"
     file_list = os.listdir(directory_path)
