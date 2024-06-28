@@ -135,24 +135,26 @@ def main():
                 '000168', '000169', '000173', '000175', '000176', '000177', '000178', 
                 '000179', '000033', '000034', '000723', '001781']
     
-    square3 = np.ones((3,3))
-    square5 = np.ones((5,5))
-    disk1 = disk(1) 
-    diamond1 = diamond(1)
-    rectangle1 = rectangle(1, 5)
-    cross = np.array([[0, 1, 0],
-                      [1, 1, 1],
-                      [0, 1, 0]])
+    structure_options = {
+        "Cruz": np.array([[0, 1, 0],
+                          [1, 1, 1],
+                          [0, 1, 0]]),
+        "Retângulo": rectangle(3, 5),  # Exemplo de retângulo 3x5
+        "Quadrado": square(3),  # Exemplo de quadrado de tamanho 3
+        "Círculo": disk(1),  # Disco de raio 1
+        "Diamante": diamond(1)  # Diamante de raio 1
+    }
     
-    structures = [cross, square3, square5, disk1, diamond1, rectangle1]
-    
+    structure_options = list(structure_options.keys())
+
     selected_patient = st.sidebar.selectbox('Selecione o Paciente:', patients)
 
     radius = st.sidebar.slider('Resolução para perfil', min_value=0.01, max_value=0.49, value=0.49, step=0.01)
     smooth = st.sidebar.slider('Smooth', min_value=100, max_value=1000, value=700, step=100)
     shift = st.sidebar.slider('Shift', min_value=-250, max_value=250, value=0, step=10)  # Slider para deslocamento
     
-    structure = st.sidebar.selectbox('Selecione a estrutura:', structures)
+    selected_structure_name = st.sidebar.selectbox('Selecione a estrutura:', structure_names)
+    structure = structure_options[selected_structure_name]
     
     directory_path = f"data/{selected_patient}"
     file_list = os.listdir(directory_path)
