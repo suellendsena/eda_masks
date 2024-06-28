@@ -9,7 +9,7 @@ from skimage import morphology as nima
 from matplotlib.colors import ListedColormap
 import seaborn as sns
 import os
-from skimage.morphology import diamond, rectangle, disk
+from skimage.morphology import diamond, rectangle, disk, square
 
 """
 Shape signature profile Module
