@@ -145,7 +145,7 @@ def main():
         "Diamante": diamond(1)  # Diamante de raio 1
     }
     
-    structure_options = list(structure_options.keys())
+    structure_names = list(structure_options.keys())
 
     selected_patient = st.sidebar.selectbox('Selecione o Paciente:', patients)
 
