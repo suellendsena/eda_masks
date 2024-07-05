@@ -163,8 +163,8 @@ def main():
         "Cruz": cruz,
         "Retângulo": rectangle,  
         "Quadrado": square(3), 
-        "Círculo": disk(1), 
-        "Diamante": diamond(1)  
+        "Círculo": disk(5), 
+        "Diamante": diamond(3)  
     }
     
     # Lista de nomes das opções para o selectbox
