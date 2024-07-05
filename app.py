@@ -160,7 +160,6 @@ def main():
     structure_options = {
         "Default": None,
         "Cruz": cruz,
-        "Retângulo": rectangle(3, 5),  
         "Quadrado": square(3), 
         "Círculo": disk(1), 
         "Diamante": diamond(1)  
