@@ -136,6 +136,10 @@ def main():
                     [1, 1, 1],
                     [0, 1, 0]])
 
+    # Retângulo
+    def rectangle(height, width):
+        return np.ones((height, width), dtype=np.uint8)
+
     # Quadrado
     def square(size):
         return np.ones((size, size), dtype=np.uint8)
@@ -156,6 +160,7 @@ def main():
     structure_options = {
         "Default": None,
         "Cruz": cruz,
+        "Retângulo": rectangle(3, 5),  
         "Quadrado": square(3), 
         "Círculo": disk(1), 
         "Diamante": diamond(1)  
